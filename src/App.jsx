@@ -23,9 +23,14 @@ const isAdmin = () => {
 };
 
 const ProtectedRoute = ({ children, adminOnly = false }) => {
-  if (!isAuthenticated()) {
-    return <Navigate to="/user/login" replace />;
-  }
+ if (!isAuthenticated()) {
+  return (
+    <Navigate 
+      to={adminOnly ? "/admin/login" : "/user/login"} 
+      replace 
+    />
+  );
+}
   if (adminOnly && !isAdmin()) {
     return <Navigate to="/user/dashboard" replace />;
   }
