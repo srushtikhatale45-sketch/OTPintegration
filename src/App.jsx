@@ -23,11 +23,11 @@ const isAdmin = () => {
 };
 
 const ProtectedRoute = ({ children, adminOnly = false }) => {
- if (!isAuthenticated()) {
+  if (!isAuthenticated()) {
   return (
-    <Navigate 
-      to={adminOnly ? "/admin/login" : "/user/login"} 
-      replace 
+    <Navigate
+      to={adminOnly ? "/admin/login" : "/user/login"}
+      replace
     />
   );
 }
@@ -46,7 +46,14 @@ function App() {
       <Route path="/verify" element={<VerifyOTP />} />
       
       {/* User Dashboard */}
-      <Route path="/user/dashboard" element={<UserDashboard />} />
+     <Route
+ path="/user/dashboard"
+ element={
+   <ProtectedRoute>
+      <UserDashboard />
+   </ProtectedRoute>
+ }
+/>
       
       {/* Admin Routes */}
       <Route path="/admin/dashboard" element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />
