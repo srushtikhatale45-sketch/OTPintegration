@@ -28,7 +28,7 @@ const UserLogin = () => {
     setLoading(true);
     setError('');
     try {
-      const res = await api.post('/otp/send', { identifier, channel });
+      const res = await api.post('/auth/user/login', { identifier, channel });
       if (res.data.success) {
         localStorage.setItem('otpRequestId', res.data.requestId);
         localStorage.setItem('channel', res.data.channel);

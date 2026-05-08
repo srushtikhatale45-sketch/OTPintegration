@@ -33,9 +33,10 @@ const VerifyOTP = () => {
     }
     
     try {
-      const res = await api.post('/otp/verify', { requestId, otpCode });
+      // FIXED: Changed from '/otp/verify' to '/auth/user/verify'
+      const res = await api.post('/auth/user/verify', { requestId, otpCode });
       
-      if (res.data.success) {
+      if (res.data.success && res.data.verified) {
         // Store token and user data
         localStorage.setItem('token', res.data.token);
         localStorage.setItem('user', JSON.stringify(res.data.user));
@@ -44,6 +45,8 @@ const VerifyOTP = () => {
         
         // Redirect to user dashboard
         navigate('/user/dashboard');
+      } else {
+        setError(res.data.message || 'Invalid OTP');
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid OTP');
