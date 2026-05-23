@@ -16,10 +16,9 @@ const UserTable = ({
   const [selectedUserStats, setSelectedUserStats] = useState(null);
   const userList = Array.isArray(users) ? users : [];
 
-  const handleViewDashboard = (user) => {
-    navigate(`/user/dashboard?userId=${user.id}`);
-  };
-
+const handleViewDashboard = (user) => {
+  navigate(`/admin/user-dashboard/${user.id}`);
+};
   const handleViewOTPStats = (user) => {
     const stats = otpStats.find(s => s.userId === user.id) || {
       totalAttempts: 0,

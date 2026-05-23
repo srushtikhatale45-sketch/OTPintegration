@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import{useNavigate} from 'react-router-dom';
 import Sidebar from '../../components/admin/Sidebar';
 import api from '../../services/api';
 
@@ -15,7 +16,7 @@ const AdminUsers = () => {
   const [paymentAmount, setPaymentAmount] = useState('');
   const [paymentDescription, setPaymentDescription] = useState('');
   const [editingUser, setEditingUser] = useState(null);
-  
+  const navigate = useNavigate();
   // Create Form State
   const [createForm, setCreateForm] = useState({
     name: '',
@@ -189,7 +190,9 @@ useEffect(() => {
     });
     setShowEditModal(true);
   };
-
+const handleViewDashboard = (user) => {
+  navigate(`/admin/user-dashboard/${user.id}`);
+};
   const handleServiceToggle = (service, isCreate = true) => {
     if (isCreate) {
       setCreateForm({
@@ -309,6 +312,9 @@ useEffect(() => {
                         >
                           Delete
                         </button>
+                        <button onClick={() => handleViewDashboard(user)} className="text-indigo-600 hover:text-indigo-800">
+  Dashboard
+</button>
                       </div>
                     </td>
                   </tr>

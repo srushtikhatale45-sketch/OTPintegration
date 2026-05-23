@@ -8,7 +8,7 @@ import AdminDashboard from './pages/admin/Dashboard';
 import AdminUsers from './pages/admin/Users';
 import AdminOTPActivity from './pages/admin/OTPActivity';
 import AdminBilling from './pages/admin/Billing';
-
+import AdminUserDashboardView from './pages/admin/AdminUserDashboardView';
 function App() {
   return (
     <Routes>
@@ -21,6 +21,7 @@ function App() {
       <Route path="/admin/users" element={<AdminUsers />} />
       <Route path="/admin/otp-activity" element={<AdminOTPActivity />} />
       <Route path="/admin/billing" element={<AdminBilling />} />
+      <Route path="/admin/user-dashboard/:userId" element={<AdminUserDashboardView />} />
       <Route path="/" element={<Navigate to="/login" replace />} />
     </Routes>
   );
