@@ -9,17 +9,12 @@ const VerifyOTP = () => {
   const [error, setError] = useState('');
   const [channel, setChannel] = useState('');
 
-  useEffect(() => {
-    const savedChannel = localStorage.getItem('channel');
-    if (savedChannel) setChannel(savedChannel);
-    
-    // Redirect if already logged in
-    const token = localStorage.getItem('token');
-    if (token) {
-      navigate('/user/dashboard');
-    }
-  }, [navigate]);
-
+ useEffect(() => {
+  // Clear any existing dashboard tokens so OTP flow works independently
+  localStorage.removeItem('token');
+  localStorage.removeItem('admin');
+  localStorage.removeItem('user');
+}, []);
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);

@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/admin/Sidebar';
 import api from '../../services/api';
+import OTPReportTable from '../../pages/OTPReportTable'; // correct path
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
   const [stats, setStats] = useState(null);
   const [adminBalance, setAdminBalance] = useState(0);
   const [recentActivities, setRecentActivities] = useState([]);
@@ -28,12 +31,12 @@ const AdminDashboard = () => {
   };
 
   const statsCards = [
-    { title: 'Total Users', value: stats?.totalUsers || 0, icon: '👥', color: 'bg-blue-500' },
+    { title: 'Total Users', value: stats?.totalUsers || 0, icon: '👥', color: 'bg-blue-500', link: '/admin/users' },
     { title: 'Active Users', value: stats?.activeUsers || 0, icon: '✅', color: 'bg-green-500' },
-    { title: 'Total OTP Requests', value: stats?.totalOTPRequests || 0, icon: '📱', color: 'bg-purple-500' },
+    { title: 'Total OTP Requests', value: stats?.totalOTPRequests || 0, icon: '📱', color: 'bg-purple-500', link: '/admin/otp-activity' },
     { title: 'Successful Verifications', value: stats?.successfulVerifications || 0, icon: '✓', color: 'bg-teal-500' },
-    { title: 'Total Revenue', value: `$${stats?.revenue?.toFixed(2) || '0.00'}`, icon: '💰', color: 'bg-yellow-500' },
-    { title: 'Admin Balance', value: `$${adminBalance.toFixed(2)}`, icon: '💳', color: 'bg-indigo-500' }
+    { title: 'Total Revenue', value: `₹${stats?.revenue?.toFixed(2) || '0.00'}`, icon: '💰', color: 'bg-yellow-500', link: '/admin/billing' },
+    { title: 'Admin Balance', value: `₹${adminBalance.toFixed(2)}`, icon: '💳', color: 'bg-indigo-500' }
   ];
 
   if (loading) {
@@ -59,7 +62,11 @@ const AdminDashboard = () => {
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
           {statsCards.map((card, i) => (
-            <div key={i} className="bg-white rounded-lg shadow-md p-4 border-l-4 border-l-blue-500">
+            <div
+              key={i}
+              onClick={() => card.link && navigate(card.link)}
+              className={`bg-white rounded-lg shadow-md p-4 border-l-4 border-l-blue-500 ${card.link ? 'cursor-pointer hover:shadow-lg transition-shadow' : ''}`}
+            >
               <div className="flex justify-between items-start">
                 <div>
                   <p className="text-gray-500 text-xs">{card.title}</p>
@@ -73,8 +80,16 @@ const AdminDashboard = () => {
           ))}
         </div>
 
-        {/* Channel Usage */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        {/* OTP Report Table - Separate Component */}
+        <div className="mb-8">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold text-gray-800">📋 Recent OTP Activity</h2>
+          </div>
+          <OTPReportTable limit={5} showViewAll={true} refreshInterval={0} />
+        </div>
+
+        {/* Channel Usage and Recent Activities (side by side) */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="bg-white rounded-lg shadow-md p-6">
             <h3 className="text-lg font-semibold mb-4">Channel Usage Statistics</h3>
             <div className="space-y-4">
@@ -98,7 +113,6 @@ const AdminDashboard = () => {
             </div>
           </div>
 
-          {/* Recent Activities */}
           <div className="bg-white rounded-lg shadow-md p-6">
             <h3 className="text-lg font-semibold mb-4">Recent Activities</h3>
             <div className="space-y-3 max-h-64 overflow-y-auto">

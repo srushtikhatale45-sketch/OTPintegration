@@ -81,7 +81,7 @@ const UserDashboard = () => {
           <div className="flex items-center gap-4">
             <div className="text-right">
               <p className="text-sm text-gray-600">Balance</p>
-              <p className="font-bold text-green-600">${getBalance().toFixed(2)}</p>
+              <p className="font-bold text-green-600">₹{getBalance().toFixed(2)}</p>
             </div>
             <button
               onClick={() => { localStorage.clear(); navigate('/user/login'); }}
@@ -116,7 +116,7 @@ const UserDashboard = () => {
           </div>
           <div className="bg-white rounded-lg shadow p-4">
             <p className="text-gray-500 text-sm">Total Spent</p>
-            <p className="text-2xl font-bold text-blue-600">${report?.totalSpent?.toFixed(4) || '0.0000'}</p>
+            <p className="text-2xl font-bold text-blue-600">₹{report?.totalSpent?.toFixed(4) || '0.0000'}</p>
           </div>
         </div>
 
@@ -140,7 +140,7 @@ const UserDashboard = () => {
           {activeTab === 'campaigns' && (
             <div className="p-6">
               <div className="bg-blue-50 rounded-lg p-4 mb-6">
-                <p className="text-sm text-blue-800">⚠️ Note: Your balance will be deducted for each OTP sent. Current balance: <strong>${getBalance().toFixed(2)}</strong></p>
+                <p className="text-sm text-blue-800">⚠️ Note: Your balance will be deducted for each OTP sent. Current balance: <strong>₹{getBalance().toFixed(2)}</strong></p>
                 {getBalance() <= 0 && <p className="text-sm text-red-600 mt-2">⚠️ Insufficient balance. Please contact admin to add credits.</p>}
               </div>
 
@@ -171,7 +171,7 @@ const UserDashboard = () => {
                     <div className="flex gap-4 mt-2 text-sm">
                       <span className="text-green-600">✓ {campaign.successCount} sent</span>
                       <span className="text-red-600">✗ {campaign.failedCount} failed</span>
-                      <span className="text-blue-600">💰 ${parseFloat(campaign.cost).toFixed(4)}</span>
+                      <span className="text-blue-600">💰 ₹{parseFloat(campaign.totalCost || campaign.cost || 0).toFixed(4)}</span>
                     </div>
                   </div>
                 ))}
@@ -268,7 +268,7 @@ async function verifyOTP(requestId, otpCode) {
                             {msg.status}
                           </span>
                         </td>
-                        <td className="px-6 py-4 font-medium text-green-600">${parseFloat(msg.cost).toFixed(4)}</td>
+                        <td className="px-6 py-4 font-medium text-green-600">₹{parseFloat(msg.cost).toFixed(4)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -282,7 +282,7 @@ async function verifyOTP(requestId, otpCode) {
                   {report?.payments?.map((payment, i) => (
                     <div key={i} className="flex justify-between items-center border-b py-2">
                       <div>
-                        <p className="font-medium">${parseFloat(payment.amount).toFixed(2)}</p>
+                        <p className="font-medium">₹{parseFloat(payment.amount).toFixed(2)}</p>
                         <p className="text-sm text-gray-500">{payment.description}</p>
                       </div>
                       <p className="text-sm text-gray-400">{new Date(payment.createdAt).toLocaleString()}</p>
