@@ -16,9 +16,9 @@ const UserLogin = () => {
     try {
       const res = await api.post('/auth/user/login', { identifier, channel });
       if (res.data.success) {
-        localStorage.setItem('otpRequestId', res.data.requestId);
-        localStorage.setItem('channel', res.data.channel);
-        localStorage.setItem('identifier', identifier);
+        sessionStorage.setItem('otpRequestId', res.data.requestId);
+sessionStorage.setItem('channel', res.data.channel);
+sessionStorage.setItem('identifier', identifier);
         if (res.data.devOtp) alert(`Your OTP is: ${res.data.devOtp}`);
         navigate('/verify');
       } else {
