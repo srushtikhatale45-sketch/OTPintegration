@@ -32,19 +32,21 @@ const VerifyOTP = () => {
     try {
       const res = await api.post('/auth/user/verify', { requestId, otpCode });
       if (res.data.success && res.data.verified) {
-        // Store UI flags
-        localStorage.setItem('loggedIn', 'true');
-        localStorage.setItem('userRole', res.data.userType === 'client_admin' ? 'user' : 'end_user');
-        // Clear temporary OTP data
-        sessionStorage.removeItem('otpRequestId');
-        sessionStorage.removeItem('channel');
-        sessionStorage.removeItem('identifier');
-        
-        if (res.data.userType === 'client_admin') navigate('/user/dashboard');
-        else navigate('/enduser/dashboard');
-      } else {
-        setError(res.data.message || 'Invalid OTP');
-      }
+  console.log('Verification success, userType:', res.data.userType);
+  localStorage.setItem('loggedIn', 'true');
+  localStorage.setItem('userRole', res.data.userType === 'client_admin' ? 'user' : 'end_user');
+  sessionStorage.removeItem('otpRequestId');
+  sessionStorage.removeItem('channel');
+  sessionStorage.removeItem('identifier');
+
+  if (res.data.userType === 'client_admin') {
+    console.log('Redirecting to /user/dashboard');
+    navigate('/user/dashboard');
+  } else {
+    console.log('Redirecting to /enduser/dashboard');
+    navigate('/enduser/dashboard');
+  }
+}
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid OTP');
     } finally {
