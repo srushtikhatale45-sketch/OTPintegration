@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
+
 const Login = () => {
   const navigate = useNavigate();
   const [identifier, setIdentifier] = useState('');
@@ -8,25 +9,27 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setError('');
-  try {
-    const res = await api.post('/auth/login', { identifier, password });
-    if (res.data.success) {
-      // No token to store; cookies are set automatically
-      if (res.data.role === 'admin') navigate('/admin/dashboard');
-      else navigate('/user/dashboard');
-    } else {
-      setError(res.data.message || 'Login failed');
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    try {
+      const res = await api.post('/auth/login', { identifier, password });
+      if (res.data.success) {
+        // Only store UI flags; token is in httpOnly cookie
+        localStorage.setItem('loggedIn', 'true');
+        localStorage.setItem('userRole', res.data.role);
+        if (res.data.role === 'admin') navigate('/admin/dashboard');
+        else navigate('/user/dashboard');
+      } else {
+        setError(res.data.message || 'Login failed');
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || 'Login failed');
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    setError(err.response?.data?.message || 'Login failed');
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 to-indigo-900">

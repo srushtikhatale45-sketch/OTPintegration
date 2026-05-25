@@ -8,38 +8,37 @@ const VerifyOTP = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [channel, setChannel] = useState('');
+   
+  useEffect(() => {
+    // Remove any old UI flags (not the token, which is in cookie)
+    localStorage.removeItem('loggedIn');
+    localStorage.removeItem('userRole');
+    
+    const savedChannel = localStorage.getItem('channel');
+    if (savedChannel) setChannel(savedChannel);
+  }, []);
 
- useEffect(() => {
-  // Clear any existing dashboard tokens so OTP flow works independently
-  localStorage.removeItem('token');
-  localStorage.removeItem('admin');
-  localStorage.removeItem('user');
-}, []);
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
     const requestId = localStorage.getItem('otpRequestId');
-    
     if (!requestId) {
       setError('Session expired. Please login again.');
       setTimeout(() => navigate('/user/login'), 2000);
       return;
     }
-    
     try {
-      // FIXED: Changed from '/otp/verify' to '/auth/user/verify'
       const res = await api.post('/auth/user/verify', { requestId, otpCode });
-      
       if (res.data.success && res.data.verified) {
-        // Store token and user data
-        localStorage.setItem('token', res.data.token);
-        localStorage.setItem('user', JSON.stringify(res.data.user));
+        // Token is already set as httpOnly cookie by backend – we do NOT store it
+        localStorage.setItem('loggedIn', 'true');
+        localStorage.setItem('userRole', res.data.userType === 'client_admin' ? 'user' : 'end_user');
         localStorage.removeItem('otpRequestId');
         localStorage.removeItem('channel');
         
-        // Redirect to user dashboard
-        navigate('/user/dashboard');
+        if (res.data.userType === 'client_admin') navigate('/user/dashboard');
+        else navigate('/enduser/dashboard');
       } else {
         setError(res.data.message || 'Invalid OTP');
       }
@@ -49,6 +48,7 @@ const VerifyOTP = () => {
       setLoading(false);
     }
   };
+
 
   const channelIcons = { email: '✉️', sms: '📱', whatsapp: '💬' };
 

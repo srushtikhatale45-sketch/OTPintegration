@@ -8,24 +8,19 @@ const api = axios.create({
   baseURL: API_BASE_URL,
   headers: { 'Content-Type': 'application/json' },
   timeout: 30000,
-  withCredentials: true   // crucial for cookies
+  withCredentials: true   // sends cookies automatically
 });
 
-// Response interceptor to refresh token on 401
+// No request interceptor – cookies are enough
+
+// Response interceptor – handle 401 without redirecting (components will handle)
 api.interceptors.response.use(
   (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      try {
-        await api.post('/auth/refresh');
-        return api(originalRequest);
-      } catch (refreshError) {
-        // Refresh failed – redirect to login
-        window.location.href = '/login';
-        return Promise.reject(refreshError);
-      }
+  (error) => {
+    if (error.response?.status === 401) {
+      // Clear any local state if needed, but don't redirect automatically
+      localStorage.removeItem('loggedIn');
+      localStorage.removeItem('userRole');
     }
     return Promise.reject(error);
   }
