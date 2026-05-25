@@ -10,11 +10,12 @@ const VerifyOTP = () => {
   const [channel, setChannel] = useState('');
    
   useEffect(() => {
-    // Remove any old UI flags (not the token, which is in cookie)
+    // Remove any old UI flags
     localStorage.removeItem('loggedIn');
     localStorage.removeItem('userRole');
     
-    const savedChannel = localStorage.getItem('channel');
+    // Get channel from sessionStorage
+    const savedChannel = sessionStorage.getItem('channel');
     if (savedChannel) setChannel(savedChannel);
   }, []);
 
@@ -22,7 +23,7 @@ const VerifyOTP = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
-    const requestId = localStorage.getItem('otpRequestId');
+    const requestId = sessionStorage.getItem('otpRequestId');
     if (!requestId) {
       setError('Session expired. Please login again.');
       setTimeout(() => navigate('/user/login'), 2000);
@@ -31,11 +32,13 @@ const VerifyOTP = () => {
     try {
       const res = await api.post('/auth/user/verify', { requestId, otpCode });
       if (res.data.success && res.data.verified) {
-        // Token is already set as httpOnly cookie by backend – we do NOT store it
+        // Store UI flags
         localStorage.setItem('loggedIn', 'true');
         localStorage.setItem('userRole', res.data.userType === 'client_admin' ? 'user' : 'end_user');
-        localStorage.removeItem('otpRequestId');
-        localStorage.removeItem('channel');
+        // Clear temporary OTP data
+        sessionStorage.removeItem('otpRequestId');
+        sessionStorage.removeItem('channel');
+        sessionStorage.removeItem('identifier');
         
         if (res.data.userType === 'client_admin') navigate('/user/dashboard');
         else navigate('/enduser/dashboard');
@@ -48,7 +51,6 @@ const VerifyOTP = () => {
       setLoading(false);
     }
   };
-
 
   const channelIcons = { email: '✉️', sms: '📱', whatsapp: '💬' };
 
