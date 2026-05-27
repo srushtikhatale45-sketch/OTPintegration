@@ -30,27 +30,30 @@ const VerifyOTP = () => {
 
       if (res.data.success && res.data.verified) {
 
+  console.log('VERIFY RESPONSE:', res.data);
+
   localStorage.setItem('loggedIn', 'true');
 
-  const userRole =
-    res.data.userType === 'client_admin'
-      ? 'user'
-      : 'end_user';
-
-  localStorage.setItem('userRole', userRole);
-
-  // IMPORTANT
+  // SAVE USER
   localStorage.setItem(
     'user',
     JSON.stringify(res.data.user)
   );
 
+  // SAVE ROLE
   if (res.data.userType === 'end_user') {
+
+    localStorage.setItem('userRole', 'end_user');
+
     navigate('/enduser/dashboard');
+
   } else {
+
+    localStorage.setItem('userRole', 'user');
+
     navigate('/user/dashboard');
   }
-  } else {
+}else {
         setError(res.data.message || 'Invalid OTP');
       }
     } catch (err) {
