@@ -7,15 +7,43 @@ const EndUserDashboard = () => {
   const [identifier, setIdentifier] = useState('');
 
   useEffect(() => {
-    // Check authentication flags
-    const loggedIn = localStorage.getItem('loggedIn') === 'true';
-    const userRole = localStorage.getItem('userRole');
-    console.log('Dashboard - loggedIn:', loggedIn, 'userRole:', userRole);
+  const loggedIn =
+    localStorage.getItem('loggedIn') === 'true';
 
-    if (!loggedIn || userRole !== 'end_user') {
-      navigate('/user/login');
-      return;
-    }
+  const userRole =
+    localStorage.getItem('userRole');
+
+  const user =
+    localStorage.getItem('user');
+
+  console.log('Dashboard Check:', {
+    loggedIn,
+    userRole,
+    user
+  });
+
+  if (!loggedIn || userRole !== 'end_user' || !user) {
+    navigate('/user/login');
+    return;
+  }
+
+  const parsedUser = JSON.parse(user);
+
+  const name =
+    parsedUser.name ||
+    sessionStorage.getItem('customerName') ||
+    'Customer';
+
+  const id =
+    parsedUser.email ||
+    parsedUser.phone ||
+    sessionStorage.getItem('identifier') ||
+    '—';
+
+  setCustomerName(name);
+  setIdentifier(id);
+
+}, [navigate]);
 
     // Read data from sessionStorage (still available because we didn't clear it)
     const name = sessionStorage.getItem('customerName') || sessionStorage.getItem('identifier')?.split('@')[0] || 'Customer';
@@ -24,12 +52,15 @@ const EndUserDashboard = () => {
     setIdentifier(id);
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('loggedIn');
-    localStorage.removeItem('userRole');
-    sessionStorage.clear();
-    navigate('/user/login');
-  };
+ const handleLogout = () => {
+  localStorage.removeItem('loggedIn');
+  localStorage.removeItem('userRole');
+  localStorage.removeItem('user');
+
+  sessionStorage.clear();
+
+  navigate('/user/login');
+};
 
   return (
     <div className="min-h-screen bg-slate-50">

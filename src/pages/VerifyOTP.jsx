@@ -29,24 +29,28 @@ const VerifyOTP = () => {
       console.log('Verification response:', res.data);
 
       if (res.data.success && res.data.verified) {
-        // Store UI flags
-        localStorage.setItem('loggedIn', 'true');
-        const userRole = res.data.userType === 'client_admin' ? 'user' : 'end_user';
-        localStorage.setItem('userRole', userRole);
 
-        // Do NOT clear sessionStorage here – we need it for the dashboard
-        // sessionStorage.removeItem('otpRequestId');
-        // sessionStorage.removeItem('channel');
-        // sessionStorage.removeItem('identifier');
-        // sessionStorage.removeItem('customerName');
+  localStorage.setItem('loggedIn', 'true');
 
-        // Redirect based on userType
-         if (res.data.userType === 'end_user') {
+  const userRole =
+    res.data.userType === 'client_admin'
+      ? 'user'
+      : 'end_user';
+
+  localStorage.setItem('userRole', userRole);
+
+  // IMPORTANT
+  localStorage.setItem(
+    'user',
+    JSON.stringify(res.data.user)
+  );
+
+  if (res.data.userType === 'end_user') {
     navigate('/enduser/dashboard');
   } else {
     navigate('/user/dashboard');
   }
-      } else {
+  } else {
         setError(res.data.message || 'Invalid OTP');
       }
     } catch (err) {
