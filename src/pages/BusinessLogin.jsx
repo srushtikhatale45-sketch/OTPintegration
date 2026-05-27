@@ -17,8 +17,10 @@ const BusinessLogin = () => {
     try {
       const res = await api.post('/auth/login', { identifier, password });
       if (res.data.success) {
-        localStorage.setItem('loggedIn', 'true');
+        localStorage.setItem('loggedIn', 'true')
+
         localStorage.setItem('userRole', res.data.role);
+
         if (res.data.role === 'admin') navigate('/admin/dashboard');
         else navigate('/user/dashboard');
       } else {

@@ -16,17 +16,39 @@ const BusinessLogin = () => {
     try {
       const res = await api.post('/auth/login', { identifier, password });
       if (res.data.success) {
+
   localStorage.setItem('loggedIn', 'true');
-  localStorage.setItem('userRole', res.data.role);
+
+  localStorage.setItem(
+    'userRole',
+    res.data.role
+  );
+
+  // SAVE JWT TOKEN
+  localStorage.setItem(
+    'token',
+    res.data.token
+  );
 
   if (res.data.role === 'admin') {
-    localStorage.setItem('admin', JSON.stringify(res.data.admin));
+
+    localStorage.setItem(
+      'admin',
+      JSON.stringify(res.data.admin)
+    );
+
     navigate('/admin/dashboard');
+
   } else {
-    localStorage.setItem('user', JSON.stringify(res.data.user));
+
+    localStorage.setItem(
+      'user',
+      JSON.stringify(res.data.user)
+    );
+
     navigate('/user/dashboard');
   }
-} else {
+}else {
         setError(res.data.message || 'Login failed');
       }
     } catch (err) {

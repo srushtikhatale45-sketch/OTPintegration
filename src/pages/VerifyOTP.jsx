@@ -60,7 +60,6 @@ const VerifyOTP = () => {
           'loggedIn',
           'true'
         );
-
         // SAVE USER
         localStorage.setItem(
           'user',
@@ -72,7 +71,6 @@ const VerifyOTP = () => {
           'userRole',
           'end_user'
         );
-
         console.log(
           'Redirecting to End User Dashboard'
         );
