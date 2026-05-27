@@ -8,13 +8,8 @@ const VerifyOTP = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [channel, setChannel] = useState('');
-   
+
   useEffect(() => {
-    // Remove any old UI flags
-    localStorage.removeItem('loggedIn');
-    localStorage.removeItem('userRole');
-    
-    // Get channel from sessionStorage
     const savedChannel = sessionStorage.getItem('channel');
     if (savedChannel) setChannel(savedChannel);
   }, []);
@@ -25,29 +20,38 @@ const VerifyOTP = () => {
     setError('');
     const requestId = sessionStorage.getItem('otpRequestId');
     if (!requestId) {
-      setError('Session expired. Please login again.');
+      setError('Session expired. Please go back and try again.');
       setTimeout(() => navigate('/user/login'), 2000);
       return;
     }
     try {
       const res = await api.post('/auth/user/verify', { requestId, otpCode });
-      if (res.data.success && res.data.verified) {
-  console.log('Verification success, userType:', res.data.userType);
-  localStorage.setItem('loggedIn', 'true');
-  localStorage.setItem('userRole', res.data.userType === 'client_admin' ? 'user' : 'end_user');
-  sessionStorage.removeItem('otpRequestId');
-  sessionStorage.removeItem('channel');
-  sessionStorage.removeItem('identifier');
+      console.log('Verification response:', res.data);
 
-  if (res.data.userType === 'client_admin') {
-    console.log('Redirecting to /user/dashboard');
-    navigate('/user/dashboard');
-  } else {
-    console.log('Redirecting to /enduser/dashboard');
-    navigate('/enduser/dashboard');
-  }
-}
+      if (res.data.success && res.data.verified) {
+        // Store UI flags
+        localStorage.setItem('loggedIn', 'true');
+        const userRole = res.data.userType === 'client_admin' ? 'user' : 'end_user';
+        localStorage.setItem('userRole', userRole);
+
+        // Do NOT clear sessionStorage here – we need it for the dashboard
+        // sessionStorage.removeItem('otpRequestId');
+        // sessionStorage.removeItem('channel');
+        // sessionStorage.removeItem('identifier');
+        // sessionStorage.removeItem('customerName');
+
+        // Redirect based on userType
+        if (res.data.userType === 'client_admin') {
+          navigate('/user/dashboard');
+        } else {
+          // For end user, navigate without clearing sessionStorage
+          navigate('/enduser/dashboard');
+        }
+      } else {
+        setError(res.data.message || 'Invalid OTP');
+      }
     } catch (err) {
+      console.error('Verification error:', err);
       setError(err.response?.data?.message || 'Invalid OTP');
     } finally {
       setLoading(false);
@@ -57,39 +61,34 @@ const VerifyOTP = () => {
   const channelIcons = { email: '✉️', sms: '📱', whatsapp: '💬' };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
-      <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
-        <div className="text-center mb-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div className="bg-gradient-to-r from-blue-900 to-blue-900 px-6 py-8 text-white text-center">
           <div className="text-5xl mb-4">{channelIcons[channel] || '🔐'}</div>
-          <h1 className="text-3xl font-bold text-gray-800">Verify OTP</h1>
-          <p className="text-gray-500 mt-2">Enter the 6-digit code sent via {channel}</p>
+          <h1 className="text-2xl font-bold">Check your device</h1>
+          <p className="text-blue-100 mt-2">Enter the 6‑digit code we sent via {channel}</p>
         </div>
-        
-        {error && (
-          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
-            {error}
-          </div>
-        )}
-        
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <input
-            type="text"
-            placeholder="Enter 6-digit OTP"
-            maxLength={6}
-            value={otpCode}
-            onChange={(e) => setOtpCode(e.target.value)}
-            className="w-full px-4 py-3 text-center text-2xl tracking-widest border rounded-lg focus:ring-2 focus:ring-blue-500"
-            required
-          />
-          
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition disabled:opacity-50"
-          >
-            {loading ? 'Verifying...' : 'Verify & Login'}
-          </button>
-        </form>
+        <div className="p-6">
+          {error && <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-xl text-sm">{error}</div>}
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <input
+              type="text"
+              placeholder="000000"
+              maxLength={6}
+              value={otpCode}
+              onChange={(e) => setOtpCode(e.target.value)}
+              className="w-full px-4 py-3 text-center text-2xl tracking-widest border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-900 focus:border-blue-900 transition"
+              required
+            />
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-blue-900 text-white py-3 rounded-xl font-semibold hover:bg-blue-900 transition disabled:opacity-50 shadow-md"
+            >
+              {loading ? 'Verifying...' : 'Verify & continue'}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );

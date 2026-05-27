@@ -9,6 +9,7 @@ const BusinessLogin = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -16,17 +17,11 @@ const BusinessLogin = () => {
     try {
       const res = await api.post('/auth/login', { identifier, password });
       if (res.data.success) {
-  localStorage.setItem('loggedIn', 'true');
-  localStorage.setItem('userRole', res.data.role);
-
-  if (res.data.role === 'admin') {
-    localStorage.setItem('admin', JSON.stringify(res.data.admin));
-    navigate('/admin/dashboard');
-  } else {
-    localStorage.setItem('user', JSON.stringify(res.data.user));
-    navigate('/user/dashboard');
-  }
-} else {
+        localStorage.setItem('loggedIn', 'true');
+        localStorage.setItem('userRole', res.data.role);
+        if (res.data.role === 'admin') navigate('/admin/dashboard');
+        else navigate('/user/dashboard');
+      } else {
         setError(res.data.message || 'Login failed');
       }
     } catch (err) {

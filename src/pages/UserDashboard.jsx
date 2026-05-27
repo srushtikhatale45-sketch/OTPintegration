@@ -11,15 +11,16 @@ const UserDashboard = () => {
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showApiModal, setShowApiModal] = useState(false);
+useEffect(() => {
+  const userData = localStorage.getItem('user');
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/user/login');
-      return;
-    }
-    loadAllData();
-  }, []);
+  if (!userData) {
+    navigate('/business/login');
+    return;
+  }
+
+  loadAllData();
+}, [navigate]);
 
   const loadAllData = async () => {
     try {
@@ -84,8 +85,13 @@ const UserDashboard = () => {
               <p className="font-bold text-green-600">₹{getBalance().toFixed(2)}</p>
             </div>
             <button
-              onClick={() => { localStorage.clear(); navigate('/user/login'); }}
-              className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+              onClick={() => {
+  localStorage.removeItem('user');
+  localStorage.removeItem('loggedIn');
+  localStorage.removeItem('userRole');
+
+  navigate('/business/login');
+}}
             >
               Logout
             </button>
