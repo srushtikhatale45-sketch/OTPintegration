@@ -41,12 +41,11 @@ const VerifyOTP = () => {
         // sessionStorage.removeItem('customerName');
 
         // Redirect based on userType
-        if (res.data.userType === 'client_admin') {
-          navigate('/user/dashboard');
-        } else {
-          // For end user, navigate without clearing sessionStorage
-          navigate('/enduser/dashboard');
-        }
+         if (res.data.userType === 'end_user') {
+    navigate('/enduser/dashboard');
+  } else {
+    navigate('/user/dashboard');
+  }
       } else {
         setError(res.data.message || 'Invalid OTP');
       }
