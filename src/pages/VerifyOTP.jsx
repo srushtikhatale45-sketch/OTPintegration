@@ -37,7 +37,7 @@ const VerifyOTP = () => {
   // SAVE USER
   localStorage.setItem(
     'user',
-    JSON.stringify(res.data.user)
+    JSON.stringify(res.data.user || {})
   );
 
   // SAVE ROLE
@@ -50,8 +50,7 @@ const VerifyOTP = () => {
   } else {
 
     localStorage.setItem('userRole', 'user');
-
-    navigate('/user/dashboard');
+    navigate('/enduser/dashboard');
   }
 }else {
         setError(res.data.message || 'Invalid OTP');
