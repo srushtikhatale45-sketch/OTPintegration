@@ -8,20 +8,11 @@ const EndUserDashboard = () => {
   const [identifier, setIdentifier] = useState('');
 
   useEffect(() => {
-    const loggedIn =
-      localStorage.getItem('loggedIn') === 'true';
+    const loggedIn = localStorage.getItem('loggedIn') === 'true';
+    const userRole = localStorage.getItem('userRole');
+    const user = localStorage.getItem('user');
 
-    const userRole =
-      localStorage.getItem('userRole');
-
-    const user =
-      localStorage.getItem('user');
-
-    console.log('Dashboard Check:', {
-      loggedIn,
-      userRole,
-      user
-    });
+    console.log('Dashboard Check:', { loggedIn, userRole, user });
 
     if (!loggedIn || userRole !== 'end_user' || !user) {
       navigate('/user/login');
@@ -29,32 +20,21 @@ const EndUserDashboard = () => {
     }
 
     const parsedUser = JSON.parse(user);
-
-    const name =
-      parsedUser.name ||
-      sessionStorage.getItem('customerName') ||
-      'Customer';
-
-    const id =
-      parsedUser.email ||
-      parsedUser.phone ||
-      sessionStorage.getItem('identifier') ||
-      '—';
+    const name = parsedUser.name || sessionStorage.getItem('customerName') || 'Customer';
+    const id = parsedUser.email || parsedUser.phone || sessionStorage.getItem('identifier') || '—';
 
     setCustomerName(name);
     setIdentifier(id);
-
   }, [navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem('loggedIn');
     localStorage.removeItem('userRole');
     localStorage.removeItem('user');
-
     sessionStorage.clear();
-
     navigate('/user/login');
   };
+
   return (
     <div className="min-h-screen bg-slate-50">
       <nav className="bg-white shadow-sm border-b">

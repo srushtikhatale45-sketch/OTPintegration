@@ -11,16 +11,16 @@ const UserDashboard = () => {
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showApiModal, setShowApiModal] = useState(false);
-useEffect(() => {
-  const userData = localStorage.getItem('user');
 
-  if (!userData) {
-    navigate('/business/login');
-    return;
-  }
-
-  loadAllData();
-}, [navigate]);
+  useEffect(() => {
+    const loggedIn = localStorage.getItem('loggedIn') === 'true';
+    const userRole = localStorage.getItem('userRole');
+    if (!loggedIn || userRole !== 'user') {
+      navigate('/login');
+      return;
+    }
+    loadAllData();
+  }, [navigate]);
 
   const loadAllData = async () => {
     try {
@@ -37,6 +37,10 @@ useEffect(() => {
       if (reportRes.data.success) setReport(reportRes.data.report);
     } catch (error) {
       console.error('Error loading data:', error);
+      if (error.response?.status === 401) {
+        localStorage.clear();
+        navigate('/login');
+      }
     } finally {
       setLoading(false);
     }
@@ -65,6 +69,15 @@ useEffect(() => {
     return parseFloat(user.balance) || 0;
   };
 
+  const handleLogout = async () => {
+    try {
+      await api.post('/auth/logout');
+    } catch (err) { /* ignore */ }
+    localStorage.clear();
+    sessionStorage.clear();
+    navigate('/login');
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -72,6 +85,8 @@ useEffect(() => {
       </div>
     );
   }
+
+  const baseUrl = 'https://otpintegrationbackend.onrender.com/api';
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -85,13 +100,8 @@ useEffect(() => {
               <p className="font-bold text-green-600">₹{getBalance().toFixed(2)}</p>
             </div>
             <button
-              onClick={() => {
-  localStorage.removeItem('user');
-  localStorage.removeItem('loggedIn');
-  localStorage.removeItem('userRole');
-
-  navigate('/business/login');
-}}
+              onClick={handleLogout}
+              className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
             >
               Logout
             </button>
@@ -194,27 +204,35 @@ useEffect(() => {
                   Show API Credentials
                 </button>
                 <div className="bg-gray-900 text-white rounded-lg p-4 font-mono text-sm overflow-x-auto">
-                  <pre>{`# Send OTP API
-POST https://otpintegrationbackend.onrender.com/api/otp/send
+                  <pre>{`# Base URL
+${baseUrl}
+
+# Send OTP to your customer
+POST ${baseUrl}/auth/user/login
 Content-Type: application/json
 
 {
-  "identifier": "user@example.com",
-  "channel": "email"
+  "identifier": "customer@example.com or +919876543210",
+  "channel": "email",   // email, sms, whatsapp
+  "name": "Customer Name"  // optional
 }
 
-# Verify OTP API
-POST https://otpintegrationbackend.onrender.com/api/otp/verify
+# Verify OTP
+POST ${baseUrl}/auth/user/verify
 Content-Type: application/json
 
 {
-  "requestId": "uuid-here",
+  "requestId": "uuid-from-send-response",
   "otpCode": "123456"
 }
 
-# Get User Info
-GET https://otpintegrationbackend.onrender.com/api/user/profile
-Authorization: Bearer YOUR_TOKEN`}</pre>
+# Get your account info (requires authentication)
+GET ${baseUrl}/user/profile
+Authorization: Bearer YOUR_TOKEN
+
+# Your API Key (for future integrations)
+API Key: ${user?.apiKey || 'Not generated'}
+`}</pre>
                 </div>
               </div>
 
@@ -223,26 +241,33 @@ Authorization: Bearer YOUR_TOKEN`}</pre>
                 <div className="bg-gray-900 text-white rounded-lg p-4 font-mono text-sm overflow-x-auto">
                   <pre>{`const axios = require('axios');
 
+const API_BASE = '${baseUrl}';
+
 // Send OTP
 async function sendOTP() {
-  const response = await axios.post(
-    'https://otpintegrationbackend.onrender.com/api/otp/send',
-    {
-      identifier: 'user@example.com',
-      channel: 'email'
-    }
-  );
+  const response = await axios.post(\`\${API_BASE}/auth/user/login\`, {
+    identifier: 'customer@example.com',
+    channel: 'email',
+    name: 'Customer Name'
+  });
   console.log(response.data);
+  // Save response.data.requestId for verification
 }
 
 // Verify OTP
 async function verifyOTP(requestId, otpCode) {
-  const response = await axios.post(
-    'https://otpintegrationbackend.onrender.com/api/otp/verify',
-    { requestId, otpCode }
-  );
+  const response = await axios.post(\`\${API_BASE}/auth/user/verify\`, {
+    requestId,
+    otpCode
+  });
   console.log(response.data);
-}`}</pre>
+}
+
+// Example usage
+sendOTP().then(() => {
+  // After user enters OTP
+  verifyOTP('request-id-here', '123456');
+});`}</pre>
                 </div>
               </div>
             </div>
@@ -309,11 +334,12 @@ async function verifyOTP(requestId, otpCode) {
             <div className="space-y-3">
               <div>
                 <label className="text-sm text-gray-500">API Key</label>
-                <p className="font-mono text-sm bg-gray-100 p-2 rounded">{user?.apiKey || 'Not generated'}</p>
+                <p className="font-mono text-sm bg-gray-100 p-2 rounded break-all">{user?.apiKey || 'Not generated'}</p>
               </div>
               <div>
                 <label className="text-sm text-gray-500">Secret Key</label>
                 <p className="font-mono text-sm bg-gray-100 p-2 rounded">••••••••••••••••</p>
+                <p className="text-xs text-gray-400 mt-1">Keep this secret. It is only shown once.</p>
               </div>
               <button onClick={() => setShowApiModal(false)} className="w-full bg-blue-600 text-white py-2 rounded-lg mt-4">Close</button>
             </div>

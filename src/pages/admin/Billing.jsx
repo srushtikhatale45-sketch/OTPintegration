@@ -22,7 +22,6 @@ const AdminBilling = () => {
     }
   };
 
-  // Auto-refresh every 5 seconds for real-time updates
   useEffect(() => {
     loadSummary();
     intervalRef.current = setInterval(loadSummary, 5000);
