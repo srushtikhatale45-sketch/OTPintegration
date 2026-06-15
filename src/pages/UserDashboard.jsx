@@ -11,6 +11,12 @@ const UserDashboard = () => {
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showApiModal, setShowApiModal] = useState(false);
+  
+  // Customer state
+  const [customers, setCustomers] = useState([]);
+  const [showCustomerModal, setShowCustomerModal] = useState(false);
+  const [editingCustomer, setEditingCustomer] = useState(null);
+  const [customerForm, setCustomerForm] = useState({ name: '', email: '', phone: '' });
 
   useEffect(() => {
     const loggedIn = localStorage.getItem('loggedIn') === 'true';
@@ -20,6 +26,7 @@ const UserDashboard = () => {
       return;
     }
     loadAllData();
+    loadCustomers();
   }, [navigate]);
 
   const loadAllData = async () => {
@@ -44,6 +51,66 @@ const UserDashboard = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const loadCustomers = async () => {
+    try {
+      const res = await api.get('/user/customers');
+      if (res.data.success) setCustomers(res.data.customers);
+    } catch (error) {
+      console.error('Error loading customers:', error);
+    }
+  };
+
+  const handleCreateCustomer = async (e) => {
+    e.preventDefault();
+    try {
+      await api.post('/user/customers', customerForm);
+      setShowCustomerModal(false);
+      setCustomerForm({ name: '', email: '', phone: '' });
+      loadCustomers();
+      alert('Customer added successfully');
+    } catch (error) {
+      alert(error.response?.data?.message || 'Failed to add customer');
+    }
+  };
+
+  const handleUpdateCustomer = async (e) => {
+    e.preventDefault();
+    try {
+      await api.put(`/user/customers/${editingCustomer.id}`, customerForm);
+      setShowCustomerModal(false);
+      setEditingCustomer(null);
+      setCustomerForm({ name: '', email: '', phone: '' });
+      loadCustomers();
+      alert('Customer updated successfully');
+    } catch (error) {
+      alert(error.response?.data?.message || 'Failed to update customer');
+    }
+  };
+
+  const handleDeleteCustomer = async (id) => {
+    if (window.confirm('Are you sure you want to delete this customer?')) {
+      try {
+        await api.delete(`/user/customers/${id}`);
+        loadCustomers();
+        alert('Customer deleted successfully');
+      } catch (error) {
+        alert(error.response?.data?.message || 'Failed to delete customer');
+      }
+    }
+  };
+
+  const openCreateModal = () => {
+    setEditingCustomer(null);
+    setCustomerForm({ name: '', email: '', phone: '' });
+    setShowCustomerModal(true);
+  };
+
+  const openEditModal = (customer) => {
+    setEditingCustomer(customer);
+    setCustomerForm({ name: customer.name, email: customer.email || '', phone: customer.phone || '' });
+    setShowCustomerModal(true);
   };
 
   const handleSendCampaign = async (e) => {
@@ -113,7 +180,7 @@ const UserDashboard = () => {
         {/* Welcome Section */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
           <h1 className="text-2xl font-bold text-gray-800">Welcome, {user?.name}!</h1>
-          <p className="text-gray-500">Manage your OTP campaigns and view reports</p>
+          <p className="text-gray-500">Manage your OTP campaigns, customers, and view reports</p>
         </div>
 
         {/* Stats Cards */}
@@ -139,9 +206,12 @@ const UserDashboard = () => {
         {/* Tabs */}
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="border-b">
-            <div className="flex">
+            <div className="flex flex-wrap">
               <button onClick={() => setActiveTab('campaigns')} className={`px-6 py-3 font-medium transition ${activeTab === 'campaigns' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}>
                 Message Campaigns
+              </button>
+              <button onClick={() => setActiveTab('customers')} className={`px-6 py-3 font-medium transition ${activeTab === 'customers' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}>
+                Customers
               </button>
               <button onClick={() => setActiveTab('documentation')} className={`px-6 py-3 font-medium transition ${activeTab === 'documentation' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}>
                 Documentation & API
@@ -192,6 +262,61 @@ const UserDashboard = () => {
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* Customers Tab */}
+          {activeTab === 'customers' && (
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-semibold">Your Customers</h2>
+                <button
+                  onClick={openCreateModal}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                >
+                  + Add Customer
+                </button>
+              </div>
+
+              {customers.length === 0 ? (
+                <p className="text-gray-500 text-center py-8">No customers yet. Click "Add Customer" to create one.</p>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Phone</th>
+                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                      {customers.map((customer) => (
+                        <tr key={customer.id} className="hover:bg-gray-50">
+                          <td className="px-6 py-4 text-sm">{customer.name}</td>
+                          <td className="px-6 py-4 text-sm">{customer.email || '-'}</td>
+                          <td className="px-6 py-4 text-sm">{customer.phone || '-'}</td>
+                          <td className="px-6 py-4 text-right space-x-2">
+                            <button
+                              onClick={() => openEditModal(customer)}
+                              className="text-blue-600 hover:text-blue-800 text-sm"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeleteCustomer(customer.id)}
+                              className="text-red-600 hover:text-red-800 text-sm"
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           )}
 
@@ -325,6 +450,50 @@ sendOTP().then(() => {
           )}
         </div>
       </div>
+
+      {/* Customer Modal (Create/Edit) */}
+      {showCustomerModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">{editingCustomer ? 'Edit Customer' : 'Add Customer'}</h2>
+              <button onClick={() => setShowCustomerModal(false)} className="text-gray-500 hover:text-gray-700 text-2xl">×</button>
+            </div>
+            <form onSubmit={editingCustomer ? handleUpdateCustomer : handleCreateCustomer} className="space-y-4">
+              <input
+                type="text"
+                placeholder="Full Name *"
+                value={customerForm.name}
+                onChange={(e) => setCustomerForm({ ...customerForm, name: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg"
+                required
+              />
+              <input
+                type="email"
+                placeholder="Email"
+                value={customerForm.email}
+                onChange={(e) => setCustomerForm({ ...customerForm, email: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg"
+              />
+              <input
+                type="tel"
+                placeholder="Phone Number"
+                value={customerForm.phone}
+                onChange={(e) => setCustomerForm({ ...customerForm, phone: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg"
+              />
+              <div className="flex gap-3 pt-4">
+                <button type="submit" className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">
+                  {editingCustomer ? 'Update' : 'Create'}
+                </button>
+                <button type="button" onClick={() => setShowCustomerModal(false)} className="flex-1 bg-gray-300 py-2 rounded-lg hover:bg-gray-400">
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* API Credentials Modal */}
       {showApiModal && (

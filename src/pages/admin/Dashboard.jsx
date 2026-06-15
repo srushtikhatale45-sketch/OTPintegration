@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/admin/Sidebar';
 import api from '../../services/api';
-import OTPReportTable from '../../pages/OTPReportTable'; // correct path
+import OTPReportTable from '../../pages/OTPReportTable';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -10,10 +10,7 @@ const AdminDashboard = () => {
   const [adminBalance, setAdminBalance] = useState(0);
   const [recentActivities, setRecentActivities] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    loadDashboardData();
-  }, []);
+  const intervalRef = useRef(null);
 
   const loadDashboardData = async () => {
     try {
@@ -29,6 +26,15 @@ const AdminDashboard = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadDashboardData();
+    // Auto-refresh every 30 seconds
+    intervalRef.current = setInterval(loadDashboardData, 30000);
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, []);
 
   const statsCards = [
     { title: 'Total Users', value: stats?.totalUsers || 0, icon: '👥', color: 'bg-blue-500', link: '/admin/users' },
@@ -54,9 +60,17 @@ const AdminDashboard = () => {
     <div className="flex">
       <Sidebar />
       <div className="flex-1 ml-64 p-6">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
-          <p className="text-gray-500">Overview of your OTP platform</p>
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
+            <p className="text-gray-500">Overview of your OTP platform</p>
+          </div>
+          <button
+            onClick={loadDashboardData}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm"
+          >
+            🔄 Refresh
+          </button>
         </div>
 
         {/* Stats Grid */}
