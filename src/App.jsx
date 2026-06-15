@@ -12,7 +12,7 @@ import AdminUsers from './pages/admin/Users';
 import AdminOTPActivity from './pages/admin/OTPActivity';
 import AdminBilling from './pages/admin/Billing';
 import AdminUserDashboardView from './pages/admin/AdminUserDashboardView';
-
+import AdminCustomers from './pages/admin/Customer';
 const isAuthenticated = () =>
   localStorage.getItem('loggedIn') === 'true';
 
@@ -96,6 +96,7 @@ function App() {
           </ProtectedRoute>
         }
       />
+      <Route path="/admin/customers" element={<ProtectedRoute adminOnly><AdminCustomers /></ProtectedRoute>} />
 
       {/* Admin Routes */}
       <Route

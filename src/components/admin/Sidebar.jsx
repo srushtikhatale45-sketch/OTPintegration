@@ -8,7 +8,8 @@ const Sidebar = () => {
     { path: '/admin/dashboard', icon: '📊', label: 'Dashboard' },
     { path: '/admin/users', icon: '👥', label: 'Users' },
     { path: '/admin/otp-activity', icon: '📱', label: 'OTP Activity' },
-    { path: '/admin/billing', icon: '💰', label: 'Billing' }
+    { path: '/admin/billing', icon: '💰', label: 'Billing' },
+    { path: '/admin/customers', icon: '👥', label: 'Customers' }
   ];
 
   const handleLogout = () => {

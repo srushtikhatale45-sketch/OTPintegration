@@ -90,9 +90,17 @@ const AdminOTPActivity = () => {
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {loading ? (
-                  <tr><td colSpan="6" className="px-6 py-8 text-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div></td></tr>
+                  <tr>
+                    <td colSpan="6" className="px-6 py-8 text-center">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                    </td>
+                  </tr>
                 ) : requests.length === 0 ? (
-                  <tr><td colSpan="6" className="px-6 py-8 text-center text-gray-500">No OTP requests found</td></tr>
+                  <tr>
+                    <td colSpan="6" className="px-6 py-8 text-center text-gray-500">
+                      No OTP requests found
+                    </td>
+                  </tr>
                 ) : (
                   requests.map((req) => (
                     <tr key={req.id} className="hover:bg-gray-50">
@@ -101,7 +109,7 @@ const AdminOTPActivity = () => {
                       <td className="px-6 py-4 text-sm text-gray-600">{req.identifier}</td>
                       <td className="px-6 py-4"><span className="text-xl">{getChannelIcon(req.channel)}</span> <span className="capitalize ml-1">{req.channel}</span></td>
                       <td className="px-6 py-4"><span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadge(req.status)}`}>{req.status}</span></td>
-                      <td className="px-6 py-4 text-sm font-medium text-green-600">${parseFloat(req.cost).toFixed(4)}</td>
+                      <td className="px-6 py-4 text-sm font-medium text-green-600">₹{parseFloat(req.cost).toFixed(4)}</td>
                     </tr>
                   ))
                 )}
