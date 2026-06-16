@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FaCheckCircle, FaTimesCircle, FaHourglassHalf } from 'react-icons/fa';
 
 const UserTable = ({ 
   users = [], 
@@ -9,16 +10,17 @@ const UserTable = ({
   onDelete, 
   onEdit, 
   onRefresh,
-  otpStats = []  // new prop: array of stats per user
+  otpStats = []
 }) => {
   const navigate = useNavigate();
   const [showStatsModal, setShowStatsModal] = useState(false);
   const [selectedUserStats, setSelectedUserStats] = useState(null);
   const userList = Array.isArray(users) ? users : [];
 
-const handleViewDashboard = (user) => {
-  navigate(`/admin/user-dashboard/${user.id}`);
-};
+  const handleViewDashboard = (user) => {
+    navigate(`/admin/user-dashboard/${user.id}`);
+  };
+
   const handleViewOTPStats = (user) => {
     const stats = otpStats.find(s => s.userId === user.id) || {
       totalAttempts: 0,
@@ -180,16 +182,22 @@ const handleViewDashboard = (user) => {
                   <span>Total OTP Attempts:</span>
                   <span className="font-bold">{selectedUserStats.totalAttempts}</span>
                 </div>
-                <div className="flex justify-between py-1">
-                  <span>✅ Verified:</span>
+                <div className="flex justify-between items-center py-1">
+                  <span className="flex items-center gap-2">
+                    <FaCheckCircle className="text-green-600" /> Verified:
+                  </span>
                   <span className="text-green-600 font-bold">{selectedUserStats.verifiedCount}</span>
                 </div>
-                <div className="flex justify-between py-1">
-                  <span>❌ Failed:</span>
+                <div className="flex justify-between items-center py-1">
+                  <span className="flex items-center gap-2">
+                    <FaTimesCircle className="text-red-600" /> Failed:
+                  </span>
                   <span className="text-red-600 font-bold">{selectedUserStats.failedCount}</span>
                 </div>
-                <div className="flex justify-between py-1">
-                  <span>⏳ Pending/Expired:</span>
+                <div className="flex justify-between items-center py-1">
+                  <span className="flex items-center gap-2">
+                    <FaHourglassHalf className="text-yellow-600" /> Pending/Expired:
+                  </span>
                   <span className="text-yellow-600 font-bold">{selectedUserStats.pendingCount}</span>
                 </div>
               </div>
@@ -200,10 +208,8 @@ const handleViewDashboard = (user) => {
             >
               Close
             </button>
-            
           </div>
         </div>
-        
       )}
     </>
   );

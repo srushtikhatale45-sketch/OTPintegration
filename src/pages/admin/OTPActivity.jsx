@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { FaEnvelope, FaMobileAlt, FaWhatsapp } from 'react-icons/fa';
 import Sidebar from '../../components/admin/Sidebar';
 import api from '../../services/api';
 
@@ -35,8 +36,12 @@ const AdminOTPActivity = () => {
   };
 
   const getChannelIcon = (channel) => {
-    const icons = { email: '✉️', sms: '📱', whatsapp: '💬' };
-    return icons[channel] || '📱';
+    switch (channel) {
+      case 'email': return <FaEnvelope className="text-gray-600" />;
+      case 'sms': return <FaMobileAlt className="text-gray-600" />;
+      case 'whatsapp': return <FaWhatsapp className="text-green-600" />;
+      default: return <FaMobileAlt className="text-gray-600" />;
+    }
   };
 
   return (
@@ -57,21 +62,24 @@ const AdminOTPActivity = () => {
           </button>
           <button
             onClick={() => setFilter('email')}
-            className={`px-4 py-2 rounded-lg transition ${filter === 'email' ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+            className={`px-4 py-2 rounded-lg transition flex items-center gap-2 ${filter === 'email' ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
           >
-            ✉️ Email
+            <FaEnvelope />
+            Email
           </button>
           <button
             onClick={() => setFilter('sms')}
-            className={`px-4 py-2 rounded-lg transition ${filter === 'sms' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+            className={`px-4 py-2 rounded-lg transition flex items-center gap-2 ${filter === 'sms' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
           >
-            📱 SMS
+            <FaMobileAlt />
+            SMS
           </button>
           <button
             onClick={() => setFilter('whatsapp')}
-            className={`px-4 py-2 rounded-lg transition ${filter === 'whatsapp' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+            className={`px-4 py-2 rounded-lg transition flex items-center gap-2 ${filter === 'whatsapp' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
           >
-            💬 WhatsApp
+            <FaWhatsapp />
+            WhatsApp
           </button>
         </div>
 
@@ -107,8 +115,15 @@ const AdminOTPActivity = () => {
                       <td className="px-6 py-4 text-sm text-gray-600">{new Date(req.createdAt).toLocaleString()}</td>
                       <td className="px-6 py-4 text-sm text-gray-600">{req.User?.name || 'N/A'}</td>
                       <td className="px-6 py-4 text-sm text-gray-600">{req.identifier}</td>
-                      <td className="px-6 py-4"><span className="text-xl">{getChannelIcon(req.channel)}</span> <span className="capitalize ml-1">{req.channel}</span></td>
-                      <td className="px-6 py-4"><span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadge(req.status)}`}>{req.status}</span></td>
+                      <td className="px-6 py-4 flex items-center gap-2">
+                        {getChannelIcon(req.channel)}
+                        <span className="capitalize">{req.channel}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadge(req.status)}`}>
+                          {req.status}
+                        </span>
+                      </td>
                       <td className="px-6 py-4 text-sm font-medium text-green-600">₹{parseFloat(req.cost).toFixed(4)}</td>
                     </tr>
                   ))

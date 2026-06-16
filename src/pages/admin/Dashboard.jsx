@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FaUsers, FaCheckCircle, FaMobileAlt, FaCheck, FaDollarSign, FaCreditCard, FaSyncAlt, FaClipboardList } from 'react-icons/fa';
 import Sidebar from '../../components/admin/Sidebar';
 import api from '../../services/api';
 import OTPReportTable from '../../pages/OTPReportTable';
@@ -37,12 +38,12 @@ const AdminDashboard = () => {
   }, []);
 
   const statsCards = [
-    { title: 'Total Users', value: stats?.totalUsers || 0, icon: '👥', color: 'bg-blue-500', link: '/admin/users' },
-    { title: 'Active Users', value: stats?.activeUsers || 0, icon: '✅', color: 'bg-green-500' },
-    { title: 'Total OTP Requests', value: stats?.totalOTPRequests || 0, icon: '📱', color: 'bg-purple-500', link: '/admin/otp-activity' },
-    { title: 'Successful Verifications', value: stats?.successfulVerifications || 0, icon: '✓', color: 'bg-teal-500' },
-    { title: 'Total Revenue', value: `₹${stats?.revenue?.toFixed(2) || '0.00'}`, icon: '💰', color: 'bg-yellow-500', link: '/admin/billing' },
-    { title: 'Admin Balance', value: `₹${adminBalance.toFixed(2)}`, icon: '💳', color: 'bg-indigo-500' }
+    { title: 'Total Users', value: stats?.totalUsers || 0, icon: FaUsers, color: 'bg-blue-500', link: '/admin/users' },
+    { title: 'Active Users', value: stats?.activeUsers || 0, icon: FaCheckCircle, color: 'bg-green-500' },
+    { title: 'Total OTP Requests', value: stats?.totalOTPRequests || 0, icon: FaMobileAlt, color: 'bg-purple-500', link: '/admin/otp-activity' },
+    { title: 'Successful Verifications', value: stats?.successfulVerifications || 0, icon: FaCheck, color: 'bg-teal-500' },
+    { title: 'Total Revenue', value: `₹${stats?.revenue?.toFixed(2) || '0.00'}`, icon: FaDollarSign, color: 'bg-yellow-500', link: '/admin/billing' },
+    { title: 'Admin Balance', value: `₹${adminBalance.toFixed(2)}`, icon: FaCreditCard, color: 'bg-indigo-500' }
   ];
 
   if (loading) {
@@ -67,37 +68,44 @@ const AdminDashboard = () => {
           </div>
           <button
             onClick={loadDashboardData}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm"
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm flex items-center gap-2"
           >
-            🔄 Refresh
+            <FaSyncAlt />
+            Refresh
           </button>
         </div>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
-          {statsCards.map((card, i) => (
-            <div
-              key={i}
-              onClick={() => card.link && navigate(card.link)}
-              className={`bg-white rounded-lg shadow-md p-4 border-l-4 border-l-blue-500 ${card.link ? 'cursor-pointer hover:shadow-lg transition-shadow' : ''}`}
-            >
-              <div className="flex justify-between items-start">
-                <div>
-                  <p className="text-gray-500 text-xs">{card.title}</p>
-                  <p className="text-xl font-bold mt-1">{card.value}</p>
-                </div>
-                <div className={`${card.color} w-8 h-8 rounded-lg flex items-center justify-center text-white text-lg`}>
-                  {card.icon}
+          {statsCards.map((card, i) => {
+            const IconComponent = card.icon;
+            return (
+              <div
+                key={i}
+                onClick={() => card.link && navigate(card.link)}
+                className={`bg-white rounded-lg shadow-md p-4 border-l-4 border-l-blue-500 ${card.link ? 'cursor-pointer hover:shadow-lg transition-shadow' : ''}`}
+              >
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="text-gray-500 text-xs">{card.title}</p>
+                    <p className="text-xl font-bold mt-1">{card.value}</p>
+                  </div>
+                  <div className={`${card.color} w-8 h-8 rounded-lg flex items-center justify-center text-white text-lg`}>
+                    <IconComponent />
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* OTP Report Table - Separate Component */}
         <div className="mb-8">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold text-gray-800">📋 Recent OTP Activity</h2>
+            <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
+              <FaClipboardList />
+              Recent OTP Activity
+            </h2>
           </div>
           <OTPReportTable limit={5} showViewAll={true} refreshInterval={0} />
         </div>

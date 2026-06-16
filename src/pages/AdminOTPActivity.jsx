@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { FaEnvelope, FaMobileAlt, FaWhatsapp, FaSyncAlt, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import Sidebar from '../../components/admin/Sidebar';
 import api from '../../services/api';
 
@@ -46,8 +47,12 @@ const AdminOTPActivity = () => {
   };
 
   const getChannelIcon = (channel) => {
-    const icons = { email: '✉️', sms: '📱', whatsapp: '💬' };
-    return icons[channel] || '📱';
+    switch (channel) {
+      case 'email': return <FaEnvelope className="text-gray-600" />;
+      case 'sms': return <FaMobileAlt className="text-gray-600" />;
+      case 'whatsapp': return <FaWhatsapp className="text-green-600" />;
+      default: return <FaMobileAlt className="text-gray-600" />;
+    }
   };
 
   return (
@@ -67,9 +72,15 @@ const AdminOTPActivity = () => {
             className="px-3 py-2 border rounded-lg bg-white"
           >
             <option value="all">All Channels</option>
-            <option value="email">✉️ Email</option>
-            <option value="sms">📱 SMS</option>
-            <option value="whatsapp">💬 WhatsApp</option>
+            <option value="email">
+              <FaEnvelope className="inline mr-1" /> Email
+            </option>
+            <option value="sms">
+              <FaMobileAlt className="inline mr-1" /> SMS
+            </option>
+            <option value="whatsapp">
+              <FaWhatsapp className="inline mr-1 text-green-600" /> WhatsApp
+            </option>
           </select>
 
           <select
@@ -78,15 +89,20 @@ const AdminOTPActivity = () => {
             className="px-3 py-2 border rounded-lg bg-white"
           >
             <option value="all">All Status</option>
-            <option value="true">✅ Verified Only</option>
-            <option value="false">❌ Not Verified</option>
+            <option value="true">
+              <FaCheckCircle className="inline mr-1 text-green-600" /> Verified Only
+            </option>
+            <option value="false">
+              <FaTimesCircle className="inline mr-1 text-red-600" /> Not Verified
+            </option>
           </select>
 
           <button
             onClick={() => setRefresh(prev => prev + 1)}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
           >
-            🔄 Refresh
+            <FaSyncAlt />
+            Refresh
           </button>
         </div>
 
@@ -117,25 +133,29 @@ const AdminOTPActivity = () => {
                       <td className="px-6 py-4 text-sm text-gray-600">{new Date(req.createdAt).toLocaleString()}</td>
                       <td className="px-6 py-4 text-sm text-gray-600">{req.User?.name || 'N/A'}</td>
                       <td className="px-6 py-4 text-sm text-gray-600">{req.identifier}</td>
-                      <td className="px-6 py-4">
-                        <span className="text-xl">{getChannelIcon(req.channel)}</span>
-                        <span className="capitalize ml-1">{req.channel}</span>
+                      <td className="px-6 py-4 flex items-center gap-2">
+                        {getChannelIcon(req.channel)}
+                        <span className="capitalize">{req.channel}</span>
                       </td>
                       <td className="px-6 py-4 font-mono text-sm">{req.otpCode || '—'}</td>
                       <td className="px-6 py-4">
                         {req.isVerified ? (
-                          <span className="px-2 py-1 rounded-full text-xs bg-green-100 text-green-700">✅ Yes</span>
+                          <span className="px-2 py-1 rounded-full text-xs bg-green-100 text-green-700 flex items-center gap-1">
+                            <FaCheckCircle /> Yes
+                          </span>
                         ) : (
-                          <span className="px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-700">❌ No</span>
+                          <span className="px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-700 flex items-center gap-1">
+                            <FaTimesCircle /> No
+                          </span>
                         )}
-                      </td>
+                       </td>
                       <td className="px-6 py-4">
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadge(req.status)}`}>
                           {req.status}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-sm font-medium text-green-600">₹{parseFloat(req.cost).toFixed(4)}</td>
-                    </td>
+                    </tr>
                   ))
                 )}
               </tbody>

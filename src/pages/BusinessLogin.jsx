@@ -1,6 +1,7 @@
 // src/pages/BusinessLogin.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FaArrowRight } from 'react-icons/fa';
 import api from '../services/api';
 
 const BusinessLogin = () => {
@@ -18,9 +19,7 @@ const BusinessLogin = () => {
       const res = await api.post('/auth/login', { identifier, password });
       if (res.data.success) {
         localStorage.setItem('loggedIn', 'true')
-
         localStorage.setItem('userRole', res.data.role);
-
         if (res.data.role === 'admin') navigate('/admin/dashboard');
         else navigate('/user/dashboard');
       } else {
@@ -48,7 +47,9 @@ const BusinessLogin = () => {
             <button type="submit" disabled={loading} className="w-full bg-slate-800 text-white py-3 rounded-xl font-semibold hover:bg-slate-900 transition">{loading ? 'Authenticating...' : 'Sign in'}</button>
           </form>
           <div className="mt-6 text-center text-xs text-gray-400">
-            <a href="/user/login" className="text-slate-600 hover:underline">Customer? Use OTP login →</a>
+            <a href="/user/login" className="text-slate-600 hover:underline inline-flex items-center gap-1">
+              Customer? Use OTP login <FaArrowRight className="text-sm" />
+            </a>
           </div>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FaHandPeace, FaPhone } from 'react-icons/fa';
 
 const EndUserDashboard = () => {
   const navigate = useNavigate();
@@ -52,10 +53,12 @@ const EndUserDashboard = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-800">Hello, {customerName} 👋</h1>
+          <h1 className="text-2xl font-bold text-gray-800 flex items-center justify-center gap-2">
+            Hello, {customerName} <FaHandPeace className="text-yellow-500" />
+          </h1>
           <p className="text-gray-500 mt-2">Welcome to OTPless – your secure verification platform.</p>
           <div className="mt-6 inline-flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-full text-sm text-gray-700">
-            <span>📞</span> {identifier}
+            <FaPhone className="text-gray-600" /> {identifier}
           </div>
           <div className="mt-4 text-sm text-gray-400">You are verified via one‑time password.</div>
         </div>

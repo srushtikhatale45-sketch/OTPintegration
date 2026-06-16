@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { FaSyncAlt, FaEnvelope, FaMobileAlt, FaWhatsapp } from 'react-icons/fa';
 import Sidebar from '../../components/admin/Sidebar';
 import api from '../../services/api';
 
@@ -41,6 +42,15 @@ const AdminBilling = () => {
     );
   }
 
+  const getChannelIcon = (channel) => {
+    switch (channel) {
+      case 'email': return <FaEnvelope className="text-gray-600" />;
+      case 'sms': return <FaMobileAlt className="text-gray-600" />;
+      case 'whatsapp': return <FaWhatsapp className="text-green-600" />;
+      default: return null;
+    }
+  };
+
   return (
     <div className="flex">
       <Sidebar />
@@ -58,9 +68,10 @@ const AdminBilling = () => {
             )}
             <button
               onClick={loadSummary}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm"
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm flex items-center gap-2"
             >
-              🔄 Refresh Now
+              <FaSyncAlt />
+              Refresh Now
             </button>
           </div>
         </div>
@@ -87,9 +98,7 @@ const AdminBilling = () => {
               {summary.channelRevenue.map((ch, i) => (
                 <div key={i} className="flex justify-between items-center py-2 border-b">
                   <div className="flex items-center gap-2">
-                    <span className="text-xl">
-                      {ch.channel === 'email' ? '✉️' : ch.channel === 'sms' ? '📱' : '💬'}
-                    </span>
+                    <span className="text-xl">{getChannelIcon(ch.channel)}</span>
                     <span className="capitalize font-medium">{ch.channel}</span>
                   </div>
                   <span className="font-bold text-green-600">₹{parseFloat(ch.total).toFixed(4)}</span>

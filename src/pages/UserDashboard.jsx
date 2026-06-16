@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { 
+  FaCheckCircle, 
+  FaTimesCircle, 
+  FaMoneyBillWave, 
+  FaExclamationTriangle, 
+  FaPlus,
+  FaSignOutAlt,
+  FaPaperPlane,
+  FaKey
+} from 'react-icons/fa';
 import api from '../services/api';
 
 const UserDashboard = () => {
@@ -168,8 +178,9 @@ const UserDashboard = () => {
             </div>
             <button
               onClick={handleLogout}
-              className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+              className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 flex items-center gap-2"
             >
+              <FaSignOutAlt />
               Logout
             </button>
           </div>
@@ -226,8 +237,16 @@ const UserDashboard = () => {
           {activeTab === 'campaigns' && (
             <div className="p-6">
               <div className="bg-blue-50 rounded-lg p-4 mb-6">
-                <p className="text-sm text-blue-800">⚠️ Note: Your balance will be deducted for each OTP sent. Current balance: <strong>₹{getBalance().toFixed(2)}</strong></p>
-                {getBalance() <= 0 && <p className="text-sm text-red-600 mt-2">⚠️ Insufficient balance. Please contact admin to add credits.</p>}
+                <p className="text-sm text-blue-800 flex items-center gap-2">
+                  <FaExclamationTriangle className="text-yellow-600" />
+                  Note: Your balance will be deducted for each OTP sent. Current balance: <strong>₹{getBalance().toFixed(2)}</strong>
+                </p>
+                {getBalance() <= 0 && (
+                  <p className="text-sm text-red-600 mt-2 flex items-center gap-2">
+                    <FaExclamationTriangle />
+                    Insufficient balance. Please contact admin to add credits.
+                  </p>
+                )}
               </div>
 
               <form onSubmit={handleSendCampaign} className="mb-8 space-y-4">
@@ -240,7 +259,8 @@ const UserDashboard = () => {
                   <option value="whatsapp">WhatsApp</option>
                 </select>
                 <input type="text" name="recipients" placeholder="Recipients (comma-separated emails/phones)" className="w-full px-4 py-2 border rounded-lg" required />
-                <button type="submit" disabled={getBalance() <= 0} className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50">
+                <button type="submit" disabled={getBalance() <= 0} className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2">
+                  <FaPaperPlane />
                   Send Campaign
                 </button>
               </form>
@@ -255,9 +275,15 @@ const UserDashboard = () => {
                     </div>
                     <p className="text-gray-600 text-sm mt-1">{campaign.message}</p>
                     <div className="flex gap-4 mt-2 text-sm">
-                      <span className="text-green-600">✓ {campaign.successCount} sent</span>
-                      <span className="text-red-600">✗ {campaign.failedCount} failed</span>
-                      <span className="text-blue-600">💰 ₹{parseFloat(campaign.totalCost || campaign.cost || 0).toFixed(4)}</span>
+                      <span className="text-green-600 flex items-center gap-1">
+                        <FaCheckCircle /> {campaign.successCount} sent
+                      </span>
+                      <span className="text-red-600 flex items-center gap-1">
+                        <FaTimesCircle /> {campaign.failedCount} failed
+                      </span>
+                      <span className="text-blue-600 flex items-center gap-1">
+                        <FaMoneyBillWave /> ₹{parseFloat(campaign.totalCost || campaign.cost || 0).toFixed(4)}
+                      </span>
                     </div>
                   </div>
                 ))}
@@ -272,9 +298,10 @@ const UserDashboard = () => {
                 <h2 className="text-xl font-semibold">Your Customers</h2>
                 <button
                   onClick={openCreateModal}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
                 >
-                  + Add Customer
+                  <FaPlus />
+                  Add Customer
                 </button>
               </div>
 
@@ -325,7 +352,8 @@ const UserDashboard = () => {
             <div className="p-6">
               <div className="mb-8">
                 <h3 className="text-lg font-semibold mb-4">API Integration</h3>
-                <button onClick={() => setShowApiModal(true)} className="bg-gray-800 text-white px-4 py-2 rounded-lg mb-4">
+                <button onClick={() => setShowApiModal(true)} className="bg-gray-800 text-white px-4 py-2 rounded-lg mb-4 flex items-center gap-2">
+                  <FaKey />
                   Show API Credentials
                 </button>
                 <div className="bg-gray-900 text-white rounded-lg p-4 font-mono text-sm overflow-x-auto">

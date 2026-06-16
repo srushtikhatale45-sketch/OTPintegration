@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import{useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { FaPlus, FaMobileAlt, FaWhatsapp, FaEnvelope } from 'react-icons/fa';
 import Sidebar from '../../components/admin/Sidebar';
 import api from '../../services/api';
 
@@ -9,7 +10,7 @@ const AdminUsers = () => {
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
-  const [showCreateModal, setShowCreateModal] = useState(false); // Fixed: was showModal
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -17,6 +18,7 @@ const AdminUsers = () => {
   const [paymentDescription, setPaymentDescription] = useState('');
   const [editingUser, setEditingUser] = useState(null);
   const navigate = useNavigate();
+
   // Create Form State
   const [createForm, setCreateForm] = useState({
     name: '',
@@ -27,7 +29,7 @@ const AdminUsers = () => {
     services: { sms: true, whatsapp: false, email: true },
     initialBalance: 0
   });
-  
+
   // Edit Form State
   const [editForm, setEditForm] = useState({
     name: '',
@@ -38,22 +40,22 @@ const AdminUsers = () => {
     services: { sms: true, whatsapp: false, email: true }
   });
 
- const [otpStats, setOtpStats] = useState([]);
+  const [otpStats, setOtpStats] = useState([]);
 
-const loadOTPStats = async () => {
-  try {
-    const res = await api.get('/admin/user-otp-stats');
-    if (res.data.success) setOtpStats(res.data.stats);
-  } catch (error) {
-    console.error('Error loading OTP stats:', error);
-  }
-};
+  const loadOTPStats = async () => {
+    try {
+      const res = await api.get('/admin/user-otp-stats');
+      if (res.data.success) setOtpStats(res.data.stats);
+    } catch (error) {
+      console.error('Error loading OTP stats:', error);
+    }
+  };
 
-useEffect(() => {
-  loadUsers();
-  loadServices();
-  loadOTPStats(); // new
-}, [pagination.page, search]);
+  useEffect(() => {
+    loadUsers();
+    loadServices();
+    loadOTPStats();
+  }, [pagination.page, search]);
 
   const loadUsers = async () => {
     setLoading(true);
@@ -82,7 +84,6 @@ useEffect(() => {
   const handleCreateUser = async (e) => {
     e.preventDefault();
     
-    // Validate password
     if (!createForm.password) {
       alert('Password is required');
       return;
@@ -190,9 +191,11 @@ useEffect(() => {
     });
     setShowEditModal(true);
   };
-const handleViewDashboard = (user) => {
-  navigate(`/admin/user-dashboard/${user.id}`);
-};
+
+  const handleViewDashboard = (user) => {
+    navigate(`/admin/user-dashboard/${user.id}`);
+  };
+
   const handleServiceToggle = (service, isCreate = true) => {
     if (isCreate) {
       setCreateForm({
@@ -236,9 +239,10 @@ const handleViewDashboard = (user) => {
           </div>
           <button 
             onClick={() => setShowCreateModal(true)} 
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
           >
-            + Add User
+            <FaPlus />
+            Add User
           </button>
         </div>
 
@@ -312,9 +316,9 @@ const handleViewDashboard = (user) => {
                         >
                           Delete
                         </button>
-                        <button onClick={() => handleViewDashboard(user)} className="text-indigo-600 hover:text-indigo-800">
-  Dashboard
-</button>
+                        <button onClick={() => handleViewDashboard(user)} className="text-indigo-600 hover:text-indigo-800 text-sm">
+                          Dashboard
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -405,15 +409,18 @@ const handleViewDashboard = (user) => {
                   <div className="flex gap-4">
                     <label className="flex items-center gap-2">
                       <input type="checkbox" checked={createForm.services.sms} onChange={() => handleCreateServiceToggle('sms')} />
-                      <span>📱 SMS</span>
+                      <FaMobileAlt className="text-gray-600" />
+                      <span>SMS</span>
                     </label>
                     <label className="flex items-center gap-2">
                       <input type="checkbox" checked={createForm.services.whatsapp} onChange={() => handleCreateServiceToggle('whatsapp')} />
-                      <span>💬 WhatsApp</span>
+                      <FaWhatsapp className="text-green-600" />
+                      <span>WhatsApp</span>
                     </label>
                     <label className="flex items-center gap-2">
                       <input type="checkbox" checked={createForm.services.email} onChange={() => handleCreateServiceToggle('email')} />
-                      <span>✉️ Email</span>
+                      <FaEnvelope className="text-gray-600" />
+                      <span>Email</span>
                     </label>
                   </div>
                 </div>
@@ -485,15 +492,18 @@ const handleViewDashboard = (user) => {
                   <div className="flex gap-4">
                     <label className="flex items-center gap-2">
                       <input type="checkbox" checked={editForm.services.sms} onChange={() => handleServiceToggle('sms', false)} />
-                      <span>📱 SMS</span>
+                      <FaMobileAlt className="text-gray-600" />
+                      <span>SMS</span>
                     </label>
                     <label className="flex items-center gap-2">
                       <input type="checkbox" checked={editForm.services.whatsapp} onChange={() => handleServiceToggle('whatsapp', false)} />
-                      <span>💬 WhatsApp</span>
+                      <FaWhatsapp className="text-green-600" />
+                      <span>WhatsApp</span>
                     </label>
                     <label className="flex items-center gap-2">
                       <input type="checkbox" checked={editForm.services.email} onChange={() => handleServiceToggle('email', false)} />
-                      <span>✉️ Email</span>
+                      <FaEnvelope className="text-gray-600" />
+                      <span>Email</span>
                     </label>
                   </div>
                 </div>

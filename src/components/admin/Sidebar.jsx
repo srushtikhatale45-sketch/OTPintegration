@@ -1,15 +1,16 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
+import { FaTachometerAlt, FaUsers, FaMobileAlt, FaDollarSign, FaUserFriends, FaSignOutAlt } from 'react-icons/fa';
 
 const Sidebar = () => {
   const navigate = useNavigate();
 
   const menuItems = [
-    { path: '/admin/dashboard', icon: '📊', label: 'Dashboard' },
-    { path: '/admin/users', icon: '👥', label: 'Users' },
-    { path: '/admin/otp-activity', icon: '📱', label: 'OTP Activity' },
-    { path: '/admin/billing', icon: '💰', label: 'Billing' },
-    { path: '/admin/customers', icon: '👥', label: 'Customers' }
+    { path: '/admin/dashboard', icon: FaTachometerAlt, label: 'Dashboard' },
+    { path: '/admin/users', icon: FaUsers, label: 'Users' },
+    { path: '/admin/otp-activity', icon: FaMobileAlt, label: 'OTP Activity' },
+    { path: '/admin/billing', icon: FaDollarSign, label: 'Billing' },
+    { path: '/admin/customers', icon: FaUserFriends, label: 'Customers' }
   ];
 
   const handleLogout = () => {
@@ -26,26 +27,29 @@ const Sidebar = () => {
       </div>
       
       <nav className="mt-6">
-        {menuItems.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            className={({ isActive }) => 
-              `flex items-center px-5 py-3 hover:bg-gray-800 transition-colors ${
-                isActive ? 'bg-gray-800 border-r-4 border-blue-500' : ''
-              }`
-            }
-          >
-            <span className="mr-3 text-xl">{item.icon}</span>
-            <span>{item.label}</span>
-          </NavLink>
-        ))}
+        {menuItems.map((item) => {
+          const IconComponent = item.icon;
+          return (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              className={({ isActive }) => 
+                `flex items-center px-5 py-3 hover:bg-gray-800 transition-colors ${
+                  isActive ? 'bg-gray-800 border-r-4 border-blue-500' : ''
+                }`
+              }
+            >
+              <IconComponent className="mr-3 text-xl" />
+              <span>{item.label}</span>
+            </NavLink>
+          );
+        })}
         
         <button
           onClick={handleLogout}
           className="w-full flex items-center px-5 py-3 hover:bg-gray-800 transition-colors text-left text-red-400 mt-4"
         >
-          <span className="mr-3 text-xl">🚪</span>
+          <FaSignOutAlt className="mr-3 text-xl" />
           <span>Logout</span>
         </button>
       </nav>

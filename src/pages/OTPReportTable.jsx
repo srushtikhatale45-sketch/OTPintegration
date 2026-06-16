@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { FaEnvelope, FaMobileAlt, FaWhatsapp } from 'react-icons/fa';
 import api from '../services/api';
 
 const OTPReportTable = ({ 
@@ -45,8 +46,12 @@ const OTPReportTable = ({
   };
 
   const getChannelIcon = (channel) => {
-    const icons = { email: '✉️', sms: '📱', whatsapp: '💬' };
-    return icons[channel] || '📱';
+    switch (channel) {
+      case 'email': return <FaEnvelope className="text-gray-600" />;
+      case 'sms': return <FaMobileAlt className="text-gray-600" />;
+      case 'whatsapp': return <FaWhatsapp className="text-green-600" />;
+      default: return <FaMobileAlt className="text-gray-600" />;
+    }
   };
 
   const getStatusBadge = (status) => {
@@ -115,9 +120,9 @@ const OTPReportTable = ({
                 <td className="px-6 py-4 text-sm text-gray-600">
                   {req.identifier}
                 </td>
-                <td className="px-6 py-4">
-                  <span className="text-xl">{getChannelIcon(req.channel)}</span>
-                  <span className="capitalize ml-1 text-sm">{req.channel}</span>
+                <td className="px-6 py-4 flex items-center gap-2">
+                  {getChannelIcon(req.channel)}
+                  <span className="capitalize text-sm">{req.channel}</span>
                 </td>
                 <td className="px-6 py-4">
                   {req.isVerified ? (

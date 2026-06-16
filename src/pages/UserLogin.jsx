@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FaEnvelope, FaMobileAlt, FaWhatsapp } from 'react-icons/fa';
 import api from '../services/api';
 
 const UserLogin = () => {
@@ -33,17 +34,25 @@ const UserLogin = () => {
     }
   };
 
+  const getChannelIcon = (channelId) => {
+    switch (channelId) {
+      case 'email': return <FaEnvelope className="text-2xl mx-auto" />;
+      case 'sms': return <FaMobileAlt className="text-2xl mx-auto" />;
+      case 'whatsapp': return <FaWhatsapp className="text-2xl mx-auto" />;
+      default: return null;
+    }
+  };
+
   const channels = [
-    { id: 'email', name: 'Email', icon: '✉️', color: 'blue', price: 'Free' },
-    { id: 'sms', name: 'SMS', icon: '📱', color: 'green', price: 'Free' },
-    { id: 'whatsapp', name: 'WhatsApp', icon: '💬', color: 'purple', price: 'Free' }
+    { id: 'email', name: 'Email', price: 'Free', activeBg: 'bg-blue-600', activeBorder: 'border-blue-600' },
+    { id: 'sms', name: 'SMS', price: 'Free', activeBg: 'bg-green-600', activeBorder: 'border-green-600' },
+    { id: 'whatsapp', name: 'WhatsApp', price: 'Free', activeBg: 'bg-purple-600', activeBorder: 'border-purple-600' }
   ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden">
         <div className="bg-gradient-to-r from-blue-900 to-blue-900 px-6 py-8 text-white text-center">
-        
           <h1 className="text-2xl font-bold">Welcome to OTPless</h1>
           <p className="text-blue-100 mt-2">Verify your identity with one‑time code</p>
         </div>
@@ -62,17 +71,29 @@ const UserLogin = () => {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Select Channel</label>
               <div className="grid grid-cols-3 gap-3">
-                {channels.map((ch) => (
-                  <button type="button" key={ch.id} onClick={() => setChannel(ch.id)} className={`py-3 rounded-xl border-2 transition-all ${channel === ch.id ? `bg-${ch.color}-600 text-white border-${ch.color}-600 shadow-md` : 'bg-white text-gray-700 border-gray-200 hover:border-gray-400'}`}>
-                    <span className="text-2xl">{ch.icon}</span>
-                    <div className="text-xs mt-1 font-medium">{ch.name}</div>
-                    <div className="text-xs opacity-75">{ch.price}</div>
-                  </button>
-                ))}
+                {channels.map((ch) => {
+                  const isActive = channel === ch.id;
+                  return (
+                    <button
+                      type="button"
+                      key={ch.id}
+                      onClick={() => setChannel(ch.id)}
+                      className={`py-3 rounded-xl border-2 transition-all ${
+                        isActive
+                          ? `${ch.activeBg} text-white ${ch.activeBorder} shadow-md`
+                          : 'bg-white text-gray-700 border-gray-200 hover:border-gray-400'
+                      }`}
+                    >
+                      <div className="flex justify-center">{getChannelIcon(ch.id)}</div>
+                      <div className="text-xs mt-1 font-medium">{ch.name}</div>
+                      <div className="text-xs opacity-75">{ch.price}</div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
             <button type="submit" disabled={loading} className="w-full bg-blue-900 text-white py-3 rounded-xl font-semibold hover:bg-blue-900 transition disabled:opacity-50 shadow-md">
-              {loading ? 'Sending OTP...' : 'Send '}
+              {loading ? 'Sending OTP...' : 'Send OTP'}
             </button>
           </form>
           <div className="mt-6 text-center text-xs text-gray-400">

@@ -1,4 +1,5 @@
 import React from 'react';
+import { FaUsers, FaMobileAlt, FaCheckCircle, FaTimesCircle, FaDollarSign } from 'react-icons/fa';
 
 const AnalyticsCards = ({ stats, channelStats, loading }) => {
   if (loading) {
@@ -19,11 +20,11 @@ const AnalyticsCards = ({ stats, channelStats, loading }) => {
   if (!stats) return null;
 
   const cards = [
-    { title: 'Total Users', value: stats.totalUsers || 0, icon: '👥', color: 'bg-blue-500' },
-    { title: 'Total OTP Requests', value: stats.totalOTPRequests || 0, icon: '📱', color: 'bg-green-500' },
-    { title: 'Successful Verifications', value: stats.successfulVerifications || 0, icon: '✅', color: 'bg-purple-500' },
-    { title: 'Failed Attempts', value: stats.failedAttempts || 0, icon: '❌', color: 'bg-red-500' },
-    { title: 'Total Revenue', value: `$${parseFloat(stats.revenue || 0).toFixed(2)}`, icon: '💰', color: 'bg-yellow-500' }
+    { title: 'Total Users', value: stats.totalUsers || 0, icon: FaUsers, color: 'bg-blue-500' },
+    { title: 'Total OTP Requests', value: stats.totalOTPRequests || 0, icon: FaMobileAlt, color: 'bg-green-500' },
+    { title: 'Successful Verifications', value: stats.successfulVerifications || 0, icon: FaCheckCircle, color: 'bg-purple-500' },
+    { title: 'Failed Attempts', value: stats.failedAttempts || 0, icon: FaTimesCircle, color: 'bg-red-500' },
+    { title: 'Total Revenue', value: `$${parseFloat(stats.revenue || 0).toFixed(2)}`, icon: FaDollarSign, color: 'bg-yellow-500' }
   ];
 
   return (
@@ -37,7 +38,7 @@ const AnalyticsCards = ({ stats, channelStats, loading }) => {
                 <p className="text-2xl font-bold mt-1">{card.value}</p>
               </div>
               <div className={`${card.color} w-10 h-10 rounded-lg flex items-center justify-center text-white text-xl`}>
-                {card.icon}
+                <card.icon />
               </div>
             </div>
           </div>
